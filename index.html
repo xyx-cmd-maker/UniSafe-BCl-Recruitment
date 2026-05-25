@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="UniSafe-BCI 脑机接口安全科研项目招募 — 诚招嵌入式系统与信号处理方向本科生加入">
+<title>UniSafe-BCI | 脑机接口安全科研招募</title>
+<!-- Three.js: WebGL 粒子背景 (备用CDN: unpkg.com/three@0.128.0/build/three.min.js) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+/* ================================================================
+   CSS TABLE OF CONTENTS
+   ————————————————————————————————————————————————————————————————
+   1.  Variables & Reset
+   2.  Canvas & Layout
+   3.  Navigation
+   4.  Sections (shared)
+   5.  Hero
+   6.  Buttons
+   7.  Glass Card
+   8.  Benefits
+   9.  Quality Cards
+   10. Process
+   11. Notice Box
+   12. FAQ
+   13. Footer
+   14. Animations
+   15. Responsive (1024 / 768 / 640)
+   ================================================================ */
+
+/* ── 1. Variables & Reset ── */
+:root {
+  --bg: #0a0a1a;
+  --bg-card: rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.06);
+  --accent: #5b8af7;
+  --accent2: #a259f0;
+  --text: #e8e8f0;
+  --text2: #9898b8;
+  --glow: rgba(91,138,247,0.12);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden; line-height: 1.7;
+}
+
+/* ── 2. Canvas & Layout ── */
+#particle-canvas {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: -1; pointer-events: none;
+}
+.content-wrapper { position: relative; z-index: 1; }
+
+/* ── 3. Navigation ── */
+.nav-bar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
+  border-bottom: 1px solid transparent;
+}
+.nav-bar.scrolled {
+  background: rgba(10,10,26,0.78);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+/* backdrop-filter with Safari fallback */
+@supports (backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px)) {
+  .nav-bar.scrolled {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+}
+@supports not ((backdrop-filter: blur(12px)) or (-webkit-backdrop-filter: blur(12px))) {
+  .nav-bar.scrolled { background: rgba(10,10,26,0.92); }
+}
+.nav-logo {
+  font-size: 1.25rem; font-weight: 700; letter-spacing: 0.02em;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.nav-links { display: flex; gap: 28px; list-style: none; margin: 0; padding: 0; }
+.nav-links a {
+  color: var(--text2); text-decoration: none; font-size: 0.875rem;
+  transition: color 0.25s; letter-spacing: 0.01em;
+  position: relative; padding-bottom: 4px;
+}
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
+  height: 2px; border-radius: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  transform: scaleX(0); transition: transform 0.3s ease;
+}
+.nav-links a:hover, .nav-links a:active { color: #fff; }
+.nav-links a.active { color: #fff; }
+.nav-links a.active::after { transform: scaleX(1); }
+.nav-cta {
+  padding: 8px 20px; border-radius: 24px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff !important; font-weight: 600; font-size: 0.85rem;
+  transition: box-shadow 0.35s, transform 0.25s;
+}
+.nav-cta::after { display: none; }
+.nav-cta:hover { box-shadow: 0 0 28px var(--glow); transform: translateY(-1px); }
+.nav-cta.active { color: #fff !important; box-shadow: 0 0 22px var(--glow); }
+
+/* Hamburger */
+.mobile-toggle { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+.mobile-toggle span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  margin: 5px 0; border-radius: 2px; transition: 0.3s;
+}
+
+/* ── 4. Sections (shared) ── */
+section { position: relative; z-index: 1; padding: 100px 32px; }
+.section-label {
+  display: inline-block; font-size: 0.75rem; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 16px;
+}
+.section-title {
+  font-size: clamp(2rem, 4.5vw, 3.2rem); font-weight: 700;
+  line-height: 1.2; margin: 0 0 20px 0; letter-spacing: -0.01em;
+}
+.section-title::after {
+  content: ''; display: block; width: 40px; height: 2px;
+  margin-top: 16px; border-radius: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.section-desc { color: var(--text2); font-size: 1.05rem; max-width: 600px; line-height: 1.8; }
+
+/* Utility: alternate section background */
+.section-alt { background: rgba(255,255,255,0.01); }
+
+/* ── 5. Hero ── */
+.hero-section {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  text-align: center; padding-top: 80px; overflow: hidden; position: relative;
+}
+.hero-section::before {
+  content: ''; position: absolute; top: -40%; left: 50%;
+  width: 900px; height: 900px; margin-left: -450px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(74,144,217,0.08) 0%, rgba(123,104,238,0.03) 40%, transparent 70%);
+  will-change: transform; pointer-events: none;
+}
+.hero-content-layer { position: relative; z-index: 1; will-change: transform; }
+.hero-badge {
+  display: inline-block; padding: 6px 18px; border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.12); font-size: 0.8rem;
+  color: var(--text2); margin-bottom: 28px; letter-spacing: 0.04em;
+}
+.hero-title {
+  font-size: clamp(2.8rem, 7vw, 5rem); font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 20px 0;
+  background: linear-gradient(180deg, #fff 0%, #c0c8e0 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem); color: var(--text2);
+  max-width: 560px; margin: 0 auto 40px; line-height: 1.7;
+}
+.hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ── 6. Buttons ── */
+.btn-primary {
+  padding: 14px 36px; border-radius: 28px; font-size: 0.95rem; font-weight: 600;
+  border: none; cursor: pointer; text-decoration: none;
+  background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff;
+  transition: background 0.45s ease, box-shadow 0.4s, transform 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+  box-shadow: 0 0 40px var(--glow); user-select: none;
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--accent2), var(--accent));
+  box-shadow: 0 0 64px rgba(162,89,240,0.35); transform: scale(1.03);
+}
+.btn-primary:active {
+  transform: scale(0.96); transition: transform 0.08s ease;
+  box-shadow: 0 0 20px rgba(74,144,217,0.3);
+}
+.btn-ghost {
+  padding: 14px 36px; border-radius: 28px; font-size: 0.95rem; font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.18); cursor: pointer; text-decoration: none;
+  color: #fff; transition: border-color 0.3s, background 0.3s; background: transparent;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.35); background: rgba(255,255,255,0.04); }
+.btn-ghost:active { background: rgba(255,255,255,0.08); transform: scale(0.97); }
+
+/* ── 7. Glass Card ── */
+.glass-card {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px;
+  padding: 40px; position: relative; overflow: hidden;
+  transition: border-color 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+              box-shadow 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+              transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.glass-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  opacity: 0; transition: opacity 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.glass-card:hover {
+  border-color: rgba(255,255,255,0.14); box-shadow: 0 24px 72px rgba(0,0,0,0.5);
+  transform: translateY(-8px);
+}
+.glass-card.card-hardware:hover {
+  border-color: rgba(74,144,217,0.4);
+  box-shadow: 0 24px 72px rgba(0,0,0,0.5), 0 0 24px rgba(74,144,217,0.4);
+}
+.glass-card.card-algo:hover {
+  border-color: rgba(123,104,238,0.4);
+  box-shadow: 0 24px 72px rgba(0,0,0,0.5), 0 0 24px rgba(123,104,238,0.4);
+}
+.glass-card:active { transform: translateY(-2px); border-color: rgba(255,255,255,0.1); }
+.glass-card:hover::before { opacity: 1; }
+.card-accent-bar {
+  position: absolute; top: 0; left: 20px; right: 20px; height: 3px;
+  border-radius: 0 0 3px 3px;
+}
+.card-accent-bar.blue  { background: linear-gradient(90deg, var(--accent), transparent); }
+.card-accent-bar.purple { background: linear-gradient(90deg, var(--accent2), transparent); }
+
+/* ── 8. Benefits ── */
+.benefit-list-item {
+  display: flex; gap: 16px; align-items: flex-start;
+  padding: 18px 0; border-bottom: 1px solid var(--border);
+}
+.benefit-list-item:last-child { border-bottom: none; }
+.benefit-check { flex-shrink: 0; width: 24px; height: 24px; margin-top: 2px; }
+
+/* ── 9. Quality Cards ── */
+.quality-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.quality-card {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px 24px; text-align: center;
+  transition: border-color 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+              box-shadow 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+              transform 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+              background 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.quality-card:hover {
+  border-color: rgba(255,255,255,0.14); box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+  transform: translateY(-3px); background: rgba(255,255,255,0.06);
+}
+.quality-card:active { transform: translateY(-2px); background: rgba(255,255,255,0.05); }
+.quality-card .qc-icon {
+  font-size: 2rem; margin-bottom: 14px; display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.quality-card:hover .qc-icon { transform: scale(1.1); }
+.quality-card .qc-title { font-weight: 700; margin-bottom: 10px; font-size: 1.05rem; }
+.quality-card .qc-desc  { color: var(--text2); font-size: 0.9rem; line-height: 1.7; }
+
+/* ── 10. Process ── */
+.process-horizontal {
+  display: flex; align-items: flex-start; justify-content: center;
+  gap: 0; flex-wrap: nowrap;
+}
+.process-h-item {
+  flex: 1; max-width: 200px; text-align: center;
+  display: flex; flex-direction: column; align-items: center;
+}
+.process-h-circle {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1.15rem; flex-shrink: 0;
+  background: rgba(91,138,247,0.06); color: rgba(91,138,247,0.3);
+  border: 1px solid rgba(91,138,247,0.1); margin-bottom: 14px;
+  animation: circleFill 0.6s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation-play-state: paused;
+}
+.reveal.visible .process-h-circle { animation-play-state: running; }
+.process-horizontal > .process-h-item:nth-child(3) .process-h-circle { animation-delay: 0.18s; }
+.process-horizontal > .process-h-item:nth-child(5) .process-h-circle { animation-delay: 0.36s; }
+.process-horizontal > .process-h-item:nth-child(7) .process-h-circle { animation-delay: 0.54s; }
+@keyframes circleFill {
+  0%   { background: rgba(91,138,247,0.06); color: rgba(91,138,247,0.3);  border-color: rgba(91,138,247,0.1);  }
+  100% { background: rgba(91,138,247,0.15); color: var(--accent);           border-color: rgba(91,138,247,0.25); }
+}
+.process-h-arrow { flex-shrink: 0; display: flex; align-items: center; padding: 0 4px; margin-top: 16px; }
+.process-h-arrow svg { width: 32px; height: 16px; stroke: var(--text2); opacity: 0.5; }
+.process-h-label { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+
+/* ── 11. Notice Box ── */
+.notice-box {
+  display: flex; gap: 18px; align-items: flex-start;
+  background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.1);
+  border-left: 3px solid var(--accent); border-radius: 12px; padding: 32px;
+  transition: border-color 0.4s, box-shadow 0.4s;
+}
+.notice-box:hover { border-color: rgba(255,255,255,0.18); box-shadow: 0 8px 32px rgba(0,0,0,0.25); }
+.notice-icon-box { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; }
+
+/* ── 12. FAQ ── */
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-question {
+  width: 100%; text-align: left; padding: 22px 0; background: none; border: none;
+  color: var(--text); font-size: 1.05rem; font-weight: 600; cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.faq-icon { font-size: 1.2rem; transition: transform 0.35s; color: var(--text2); }
+.faq-question[aria-expanded="true"] .faq-icon { transform: rotate(45deg); }
+.faq-answer {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.45s ease, padding 0.45s ease;
+  color: var(--text2); line-height: 1.8;
+}
+.faq-answer.open { max-height: 300px; padding-bottom: 22px; }
+
+/* ── 13. Contact Modal ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: auto; }
+.modal-card {
+  background: rgba(20,22,40,0.95); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px; padding: 40px 36px; max-width: 420px; width: 90%;
+  text-align: center; position: relative;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+  transform: translateY(24px); transition: transform 0.35s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.modal-overlay.open .modal-card { transform: translateY(0); }
+.modal-close {
+  position: absolute; top: 14px; right: 18px;
+  background: none; border: none; color: var(--text2);
+  font-size: 1.5rem; cursor: pointer; padding: 4px 8px; line-height: 1;
+  transition: color 0.2s;
+}
+.modal-close:hover { color: #fff; }
+.modal-title { font-size: 1.35rem; font-weight: 700; margin: 0 0 8px 0; }
+.modal-subtitle { color: var(--text2); font-size: 0.9rem; margin-bottom: 28px; }
+.modal-channels { display: flex; flex-direction: column; gap: 14px; }
+.modal-channel {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; border-radius: 14px;
+  border: 1px solid var(--border); background: var(--bg-card);
+  text-decoration: none; color: var(--text); text-align: left;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+.modal-channel:hover {
+  border-color: rgba(255,255,255,0.18);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+}
+.modal-channel:active { transform: scale(0.98); }
+.modal-channel-icon {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+}
+.modal-channel-icon.wechat { background: rgba(7,193,96,0.15); }
+.modal-channel-icon.email  { background: rgba(91,138,247,0.15); }
+.modal-channel-label { font-weight: 700; font-size: 0.95rem; }
+.modal-channel-value { color: var(--text2); font-size: 0.82rem; margin-top: 2px; }
+.modal-copy-btn {
+  margin-left: auto; flex-shrink: 0;
+  padding: 6px 14px; border-radius: 16px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text2); font-size: 0.78rem; cursor: pointer;
+  transition: border-color 0.3s, color 0.3s, background 0.3s;
+}
+.modal-copy-btn:hover { border-color: rgba(255,255,255,0.25); color: #fff; background: rgba(255,255,255,0.04); }
+.modal-copy-btn.copied { border-color: rgba(7,193,96,0.4); color: #07c160; background: rgba(7,193,96,0.08); }
+
+/* ── 14. Footer ── */
+footer {
+  border-top: 1px solid var(--border); padding: 40px 32px;
+  text-align: center; color: var(--text2); font-size: 0.85rem;
+}
+
+/* ── 14. Animations ── */
+.reveal {
+  opacity: 0; transform: translateY(36px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0  rgba(74,144,217,0.45); }
+  60%  { box-shadow: 0 0 0 16px rgba(74,144,217,0);     }
+  100% { box-shadow: 0 0 0 0  rgba(74,144,217,0);     }
+}
+.pulse-anim { animation: pulse-ring 2s ease-out infinite; }
+
+/* ================================================================
+   15. RESPONSIVE
+   ================================================================ */
+
+/* Tablet: 768px – 1024px */
+@media (max-width: 1024px) {
+  .quality-grid { grid-template-columns: repeat(2, 1fr); }
+  .process-horizontal { flex-wrap: wrap; gap: 24px; }
+  .process-h-arrow { display: none; }
+}
+
+/* Phone landscape / small tablet: 640px – 768px */
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+  .nav-links a::after { display: none; }
+  .nav-links a.active { color: var(--accent); }
+  .nav-links.open {
+    display: flex; flex-direction: column; position: absolute;
+    top: 64px; left: 16px; right: 16px; z-index: 200;
+    background: rgba(10,10,26,0.95); backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 16px; padding: 20px; gap: 16px;
+    border: 1px solid var(--border);
+  }
+  .mobile-toggle { display: block; }
+  section { padding: 56px 20px; }
+  .hero-section { padding: 60px 20px; min-height: 90vh; }
+  .hero-section::before { display: none; }
+  .hero-content-layer { transform: none !important; }
+  .hero-title { font-size: clamp(2rem, 6vw, 2.6rem) !important; }
+  .hero-subtitle { font-size: 1rem !important; }
+  .position-grid { grid-template-columns: 1fr !important; }
+  .glass-card { padding: 28px; }
+  .quality-grid { grid-template-columns: 1fr; }
+  .process-horizontal { flex-direction: column; align-items: center; }
+  .process-h-arrow {
+    display: flex !important; justify-content: center; margin-top: 0;
+    transform: rotate(90deg);
+  }
+  .process-h-item { max-width: 100%; }
+  .notice-box { flex-direction: column; }
+  .section-title { font-size: 28px !important; }
+  .section-desc { font-size: 0.95rem; }
+}
+
+/* Phone portrait: < 640px */
+@media (max-width: 640px) {
+  body { -webkit-text-size-adjust: 100%; }
+  section { padding: 48px 20px; }
+  .nav-bar { padding: 12px 16px; }
+  .hero-section { padding: 48px 20px; min-height: 85vh; }
+  .hero-title { font-size: 28px !important; }
+  .hero-subtitle { font-size: 15px !important; max-width: 100% !important; }
+  .hero-badge { font-size: 0.7rem; padding: 5px 14px; margin-bottom: 20px; }
+  .hero-buttons { gap: 10px; }
+  .section-title { font-size: 22px !important; }
+  .section-title::after { width: 32px; margin-top: 12px; }
+  .section-desc { font-size: 0.9rem; max-width: 100% !important; }
+  .section-label { font-size: 0.7rem; margin-bottom: 12px; }
+  .glass-card { padding: 24px; border-radius: 16px; }
+  .glass-card h3 { font-size: 1.1rem !important; }
+  .glass-card p, .glass-card li { font-size: 0.875rem !important; }
+  .btn-primary, .btn-ghost { padding: 12px 24px; font-size: 0.85rem; border-radius: 24px; }
+  .benefit-list-item { padding: 14px 0; }
+  .benefit-list-item > div:last-child { font-size: 0.95rem !important; }
+  .benefit-check svg { width: 20px; height: 20px; }
+  .quality-card { padding: 24px 18px; border-radius: 14px; }
+  .quality-card .qc-icon { font-size: 1.6rem; margin-bottom: 10px; }
+  .quality-card .qc-title { font-size: 0.95rem; }
+  .quality-card .qc-desc  { font-size: 0.85rem; }
+  .process-h-circle { width: 44px; height: 44px; font-size: 1rem; }
+  .process-h-label { font-size: 0.9rem; }
+  .process-h-arrow svg { width: 24px; height: 12px; }
+  .notice-box { padding: 20px; border-radius: 10px; }
+  .notice-icon-box svg { width: 24px; height: 24px; }
+  .faq-question { font-size: 0.95rem; padding: 18px 0; }
+  .faq-answer { font-size: 0.85rem; }
+  footer { padding: 28px 20px; font-size: 0.8rem; }
+  .card-accent-bar { left: 14px; right: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ Particle Canvas (WebGL, Three.js) ═══ -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- ═══ Main Content ═══ -->
+<div class="content-wrapper">
+
+  <!-- ── Navigation ── -->
+  <nav class="nav-bar" id="navbar">
+    <a href="#" class="nav-logo" style="text-decoration:none;">UniSafe-BCI</a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#intro"        onclick="closeMobileNav()">项目介绍</a></li>
+      <li><a href="#positions"    onclick="closeMobileNav()">招募岗位</a></li>
+      <li><a href="#benefits"     onclick="closeMobileNav()">你将获得</a></li>
+      <li><a href="#requirements" onclick="closeMobileNav()">我们希望</a></li>
+      <li><a href="#process"      onclick="closeMobileNav()">加入流程</a></li>
+      <li><a href="#notice"       onclick="closeMobileNav()">特别说明</a></li>
+      <li><a href="#faq"          onclick="closeMobileNav()">FAQ</a></li>
+      <li><a href="javascript:void(0)" class="nav-cta" onclick="closeMobileNav();openModal()">立即加入</a></li>
+    </ul>
+    <button class="mobile-toggle" id="mobileToggle" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ── Hero ── -->
+  <section class="hero-section">
+    <div class="hero-content-layer">
+      <div class="reveal"><span class="hero-badge">🧠 脑机接口 · AI 安全 · 交叉前沿</span></div>
+      <h1 class="hero-title reveal reveal-delay-1">UniSafe-BCI</h1>
+      <p class="hero-subtitle reveal reveal-delay-2">
+        探索脑机接口系统的安全边界，用工程与算法构筑下一代神经防护体系。<br>诚邀2位技术伙伴，共同冲击 CCF 推荐期刊/会议。
+      </p>
+      <div class="hero-buttons reveal reveal-delay-3">
+        <a href="#positions" class="btn-primary pulse-anim">查看招募岗位</a>
+        <a href="#intro" class="btn-ghost">了解更多</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 一、项目介绍 ── -->
+  <section id="intro">
+    <div style="max-width:880px;margin:0 auto;">
+      <div class="reveal"><span class="section-label">// 项目介绍</span></div>
+      <h2 class="section-title reveal reveal-delay-1">关于本项目</h2>
+      <p class="section-desc reveal reveal-delay-2" style="max-width:100%;">
+        这是一个计算机安全方向的本科生科研课题，聚焦脑机接口（BCI）与AI安全的交叉领域。项目已完成英文论文初稿，计划投稿CCF推荐期刊/会议。我们提出了一种硬件安全架构，从根源上切断BCI系统中反馈通道的神经注入攻击面。
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 二、招募岗位 ── -->
+  <section id="positions">
+    <div style="max-width:1000px;margin:0 auto;">
+      <div class="reveal"><span class="section-label">// 招募岗位</span></div>
+      <h2 class="section-title reveal reveal-delay-1">招募岗位</h2>
+      <div class="position-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:28px;margin-top:48px;">
+        <!-- 岗位一：嵌入式 -->
+        <div class="glass-card card-hardware reveal reveal-delay-2" style="padding-top:44px;">
+          <div class="card-accent-bar blue"></div>
+          <div style="font-size:2rem;margin-bottom:8px;">🔧</div>
+          <h3 style="font-size:1.35rem;font-weight:700;margin:0 0 16px 0;">嵌入式系统 / 硬件实现</h3>
+          <p style="color:var(--text2);font-size:0.95rem;line-height:1.9;">
+            基于ESP32和光耦隔离模块搭建可穿戴原型，完成延迟、功耗等性能测试。要求熟悉单片机开发（Arduino/ESP32均可），有电路搭建和调试经验。加分项：用过光耦、了解SPI/I2C通信协议。
+          </p>
+        </div>
+        <!-- 岗位二：算法 -->
+        <div class="glass-card card-algo reveal reveal-delay-3" style="padding-top:44px;">
+          <div class="card-accent-bar purple"></div>
+          <div style="font-size:2rem;margin-bottom:8px;">💻</div>
+          <h3 style="font-size:1.35rem;font-weight:700;margin:0 0 16px 0;">信号处理 / 算法仿真</h3>
+          <p style="color:var(--text2);font-size:0.95rem;line-height:1.9;">
+            用Python/MATLAB处理脑电信号数据集，完成攻击注入仿真和统计分析。要求熟练使用Python或MATLAB，修过信号处理或机器学习相关课程。加分项：接触过EEG/脑电数据，用过scikit-learn等机器学习库。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 三、你将获得 ── -->
+  <section id="benefits">
+    <div style="max-width:680px;margin:0 auto;">
+      <div class="reveal"><span class="section-label">// 你将获得</span></div>
+      <h2 class="section-title reveal reveal-delay-1">你将获得</h2>
+      <div style="margin-top:36px;">
+        <div class="benefit-list-item reveal reveal-delay-1">
+          <div class="benefit-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b8af7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="font-size:1.05rem;line-height:1.6;">论文署名权（按贡献排序，非挂名）</div>
+        </div>
+        <div class="benefit-list-item reveal reveal-delay-2">
+          <div class="benefit-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b8af7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="font-size:1.05rem;line-height:1.6;">完整的科研项目经历，可写进保研/出国/求职简历</div>
+        </div>
+        <div class="benefit-list-item reveal reveal-delay-3">
+          <div class="benefit-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b8af7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="font-size:1.05rem;line-height:1.6;">从实验设计到论文投稿的全流程科研训练</div>
+        </div>
+        <div class="benefit-list-item reveal reveal-delay-4">
+          <div class="benefit-check"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5b8af7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div style="font-size:1.05rem;line-height:1.6;">本人是项目负责人，导师担任通讯作者把关</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 四、我们希望你具备 ── -->
+  <section id="requirements" class="section-alt">
+    <div style="max-width:1100px;margin:0 auto;">
+      <div class="reveal"><span class="section-label">// 我们希望</span></div>
+      <h2 class="section-title reveal reveal-delay-1">我们希望你具备</h2>
+      <div class="quality-grid" style="margin-top:48px;">
+        <div class="quality-card reveal reveal-delay-1"><div class="qc-icon">💪</div><div class="qc-title">极强的抗压能力</div><div class="qc-desc">实验失败和审稿被拒都是常态，能坦然面对挫折。</div></div>
+        <div class="quality-card reveal reveal-delay-2"><div class="qc-icon">🌱</div><div class="qc-title">长期主义</div><div class="qc-desc">不欢迎"刷履历就走"的心态，实验周期1-2年，需要真正的持续投入。</div></div>
+        <div class="quality-card reveal reveal-delay-3"><div class="qc-icon">🧘</div><div class="qc-title">耐得住寂寞，坐得住板凳</div><div class="qc-desc">科研的本质是孤独而漫长的探索。</div></div>
+        <div class="quality-card reveal reveal-delay-4"><div class="qc-icon">💡</div><div class="qc-title">创新思维</div><div class="qc-desc">前沿交叉方向没有现成答案，需要主动思考和提出改进。</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 五、加入流程 ── -->
+  <section id="process">
+    <div style="max-width:960px;margin:0 auto;">
+      <div class="reveal"><span class="section-label">// 加入流程</span></div>
+      <h2 class="section-title reveal reveal-delay-1" style="text-align:center;">加入流程</h2>
+      <div class="process-horizontal" style="margin-top:48px;">
+        <div class="process-h-item reveal reveal-delay-1"><div class="process-h-circle">1</div><div class="process-h-label">私聊了解</div></div>
+        <div class="process-h-arrow reveal reveal-delay-1"><svg viewBox="0 0 32 16" fill="none"><path d="M4 8h22M22 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="process-h-item reveal reveal-delay-2"><div class="process-h-circle">2</div><div class="process-h-label">查看任务说明</div></div>
+        <div class="process-h-arrow reveal reveal-delay-2"><svg viewBox="0 0 32 16" fill="none"><path d="M4 8h22M22 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="process-h-item reveal reveal-delay-3"><div class="process-h-circle">3</div><div class="process-h-label">签署保密协议</div></div>
+        <div class="process-h-arrow reveal reveal-delay-3"><svg viewBox="0 0 32 16" fill="none"><path d="M4 8h22M22 3l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="process-h-item reveal reveal-delay-4"><div class="process-h-circle">4</div><div class="process-h-label">正式加入</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 六、特别说明 ── -->
+  <section id="notice">
+    <div style="max-width:780px;margin:0 auto;">
+      <div class="reveal"><span class="section-label">// 特别说明</span></div>
+      <h2 class="section-title reveal reveal-delay-1">特别说明</h2>
+      <div class="notice-box reveal reveal-delay-2" style="margin-top:32px;">
+        <div class="notice-icon-box">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#5b8af7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+        </div>
+        <div>
+          <p style="margin:0;color:var(--text);font-size:1.05rem;line-height:1.9;">
+            正式加入前需签署简易保密协议（一式两份，双方各执一份），主要约定：不得泄露实验数据与完整研究内容，不得将课题信息用于商业用途或转让至其他机构。协议旨在保护项目原创性和所有成员的共同成果，请理解。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 七、FAQ ── -->
+  <section id="faq" class="section-alt">
+    <div style="max-width:700px;margin:0 auto;">
+      <div class="reveal"><span class="section-label">// FAQ</span></div>
+      <h2 class="section-title reveal reveal-delay-1" style="margin-bottom:40px;">常见问题</h2>
+      <div>
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFAQ(this)"><span>这个项目需要多少时间投入？</span><span class="faq-icon">+</span></button>
+          <div class="faq-answer">项目预计持续 1-2 年。实验阶段的时间投入因人而异，一般每周需要 6-10 小时的有效工作时间。关键阶段（如数据采集期、论文修改期）可能会更集中。我们希望你能长期、稳定地参与，而非短期突击。</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-1">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFAQ(this)"><span>低年级（大一/大二）可以参加吗？</span><span class="faq-icon">+</span></button>
+          <div class="faq-answer">年级不是门槛，能力才是。如果你已经具备岗位描述中的基础技能（比如自学过单片机编程或 Python 数据处理），我们非常欢迎。科研训练本身也是一个学习过程，项目负责人会给予必要的指导。</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-2">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFAQ(this)"><span>没有 EEG 或脑机接口相关经验可以吗？</span><span class="faq-icon">+</span></button>
+          <div class="faq-answer">完全可以。脑机接口是一个交叉方向，我们会从基础讲起。我们更看重的是你的工程能力（嵌入式岗位）或数据分析能力（算法岗位），以及面对未知问题的探索精神。</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-3">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFAQ(this)"><span>保密协议具体约束什么？</span><span class="faq-icon">+</span></button>
+          <div class="faq-answer">保密协议主要约定：① 不得泄露实验数据与完整研究内容；② 不得将课题信息用于商业用途或转让至其他机构；③ 退出后保密义务仍然有效。协议旨在保护项目原创性和所有成员的共同成果，并非限制你的学术自由。</div>
+        </div>
+        <div class="faq-item reveal reveal-delay-4">
+          <button class="faq-question" aria-expanded="false" onclick="toggleFAQ(this)"><span>论文署名如何确定？</span><span class="faq-icon">+</span></button>
+          <div class="faq-answer">署名按实际贡献排序，项目负责人（发起人）为第一作者，导师为通讯作者。团队成员的署名位置取决于其所负责模块的重要性与实际投入。我们坚持学术诚信，绝不虚挂作者。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 八、CTA ── -->
+  <section id="cta" style="text-align:center;">
+    <div style="max-width:600px;margin:0 auto;">
+      <div class="reveal"><span class="section-label">// 加入我们</span></div>
+      <h2 class="section-title reveal reveal-delay-1">准备好加入了吗？</h2>
+      <p class="section-desc reveal reveal-delay-2" style="max-width:100%;margin-bottom:36px;">名额有限，招满即止。</p>
+      <div class="reveal reveal-delay-3">
+        <a href="javascript:void(0)" class="btn-primary pulse-anim" onclick="openModal()">立即联系（私聊）</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 联系方式弹窗 ── -->
+  <div class="modal-overlay" id="contactModal">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal()" aria-label="关闭">&times;</button>
+      <h3 class="modal-title">📬 联系方式</h3>
+      <p class="modal-subtitle">选择你习惯的方式联系我，期待交流。</p>
+      <div class="modal-channels">
+        <!-- 微信 -->
+        <div class="modal-channel">
+          <div class="modal-channel-icon wechat">💬</div>
+          <div>
+            <div class="modal-channel-label">微信</div>
+            <div class="modal-channel-value" id="wechatId">Cat_God_R</div>
+          </div>
+          <button class="modal-copy-btn" onclick="copyContact('wechatId', this)" title="复制微信号">复制</button>
+        </div>
+        <!-- 邮箱 -->
+        <a class="modal-channel" href="mailto:2168058243@qq.com">
+          <div class="modal-channel-icon email">📧</div>
+          <div>
+            <div class="modal-channel-label">邮箱</div>
+            <div class="modal-channel-value">2168058243@qq.com</div>
+          </div>
+          <span class="modal-copy-btn" onclick="event.preventDefault();copyContact('emailLink', this, '2168058243@qq.com')">复制</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 页脚 ── -->
+  <footer>
+    <p style="margin:0;">&copy; 2026 UniSafe-BCI Research Project. 所有权利保留。</p>
+  </footer>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+   JAVASCRIPT
+   ————————————————————————————————————————————————————————————————
+   1.  Particle System     — WebGL 粒子背景 (Three.js)
+   2.  Scroll Reveal       — 滚动入场动画 (IntersectionObserver)
+   3.  Navbar              — 滚动毛玻璃 + rAF 节流
+   4.  Active Nav Link     — 当前区块高亮 (IntersectionObserver)
+   5.  Mobile Menu         — 汉堡菜单展开/收起
+   6.  FAQ                 — 手风琴折叠
+   7.  Hero Parallax       — 视差滚动 (桌面端, rAF 节流)
+   ═══════════════════════════════════════════════════════════════ -->
+<script>
+/* ================================================================
+   1. PARTICLE SYSTEM — WebGL via Three.js
+   Desktop: 100 particles, 60fps, connections every 3 frames
+   Mobile:   40 particles, ~30fps, no connections, no mouse repulsion
+   ================================================================ */
+(function() {
+  var canvas = document.getElementById('particle-canvas');
+  var isMobile = window.innerWidth < 768;
+  var PARTICLE_COUNT = isMobile ? 40 : 100;
+  var CONNECTION_DIST = 150;
+  var MOUSE_RADIUS = 120;
+  var CONNECTION_EVERY_N = 3;
+  var MOBILE_FRAME_MS = 33;
+
+  /* Three.js setup */
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  var scene = new THREE.Scene();
+  var camera = new THREE.OrthographicCamera(0, 1, 1, 0, 1, 1000);
+  camera.position.z = 10;
+
+  var width, height;
+  function resize() {
+    width = window.innerWidth; height = window.innerHeight;
+    renderer.setSize(width, height);
+    camera.left = -width / 2; camera.right = width / 2;
+    camera.top = height / 2; camera.bottom = -height / 2;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+
+  /* Glow texture (radial gradient canvas → Three.js texture) */
+  var gc = document.createElement('canvas'); gc.width = 64; gc.height = 64;
+  var gctx = gc.getContext('2d');
+  var grad = gctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0,    'rgba(255,255,255,1)');
+  grad.addColorStop(0.06, 'rgba(255,255,255,0.9)');
+  grad.addColorStop(0.25, 'rgba(255,255,255,0.4)');
+  grad.addColorStop(0.55, 'rgba(255,255,255,0.06)');
+  grad.addColorStop(1,    'rgba(255,255,255,0)');
+  gctx.fillStyle = grad; gctx.fillRect(0, 0, 64, 64);
+  var glowTexture = new THREE.CanvasTexture(gc);
+
+  /* Color range: #4A90D9 (blue) → #7B68EE (purple) */
+  var colBlue = new THREE.Color('#4A90D9');
+  var colPurple = new THREE.Color('#7B68EE');
+
+  /* Particle buffers */
+  var positions = new Float32Array(PARTICLE_COUNT * 3);
+  var colorsArr = new Float32Array(PARTICLE_COUNT * 3);
+  var velocities = new Float32Array(PARTICLE_COUNT * 2);
+
+  for (var i = 0; i < PARTICLE_COUNT; i++) {
+    positions[i * 3]     = (Math.random() - 0.5) * width;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * height;
+    positions[i * 3 + 2] = 0;
+    var angle = Math.random() * Math.PI * 2;
+    var speed = 0.2 + Math.random() * 0.3;
+    velocities[i * 2]     = Math.cos(angle) * speed;
+    velocities[i * 2 + 1] = Math.sin(angle) * speed;
+    var mixed = colBlue.clone().lerp(colPurple, Math.random());
+    colorsArr[i * 3] = mixed.r; colorsArr[i * 3 + 1] = mixed.g; colorsArr[i * 3 + 2] = mixed.b;
+  }
+
+  /* Points mesh */
+  var pGeom = new THREE.BufferGeometry();
+  pGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  pGeom.setAttribute('color', new THREE.BufferAttribute(colorsArr, 3));
+  var pMat = new THREE.PointsMaterial({
+    size: 3.2, map: glowTexture, blending: THREE.AdditiveBlending,
+    depthTest: false, depthWrite: false, vertexColors: true, transparent: true, opacity: 0.75
+  });
+  scene.add(new THREE.Points(pGeom, pMat));
+
+  /* Lines — desktop only */
+  var lGeom, lMat, lPosArr, MAX_LINES;
+  if (!isMobile) {
+    MAX_LINES = PARTICLE_COUNT * 12;
+    lPosArr = new Float32Array(MAX_LINES * 6);
+    lGeom = new THREE.BufferGeometry();
+    lGeom.setAttribute('position', new THREE.BufferAttribute(lPosArr, 3));
+    lGeom.setDrawRange(0, 0);
+    lMat = new THREE.LineBasicMaterial({
+      color: 0x8899cc, blending: THREE.AdditiveBlending,
+      depthTest: false, depthWrite: false, transparent: true, opacity: 0.22
+    });
+    scene.add(new THREE.LineSegments(lGeom, lMat));
+  }
+
+  /* Mouse tracking — desktop + non-touch only */
+  var mouseX = 0, mouseY = 0;
+  var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (!isTouchDevice) {
+    window.addEventListener('mousemove', function(e) {
+      mouseX = e.clientX - width / 2;
+      mouseY = -(e.clientY - height / 2);
+    });
+  }
+
+  window.addEventListener('resize', function() {
+    resize();
+    var hw = width / 2, hh = height / 2;
+    for (var i = 0; i < PARTICLE_COUNT; i++) {
+      if (positions[i * 3] < -hw) positions[i * 3] = -hw;
+      if (positions[i * 3] > hw)  positions[i * 3] = hw;
+      if (positions[i * 3 + 1] < -hh) positions[i * 3 + 1] = -hh;
+      if (positions[i * 3 + 1] > hh)  positions[i * 3 + 1] = hh;
+    }
+  });
+
+  /* Page Visibility — pause rendering when hidden */
+  var pageVisible = true;
+  document.addEventListener('visibilitychange', function() { pageVisible = !document.hidden; });
+
+  /* Update connection lines */
+  function updateConnections() {
+    if (isMobile) return;
+    var lineIdx = 0;
+    for (var i = 0; i < PARTICLE_COUNT; i++) {
+      var ix = positions[i * 3], iy = positions[i * 3 + 1];
+      for (var j = i + 1; j < PARTICLE_COUNT; j++) {
+        var dx = ix - positions[j * 3], dy = iy - positions[j * 3 + 1];
+        if (Math.sqrt(dx * dx + dy * dy) < CONNECTION_DIST && lineIdx < MAX_LINES) {
+          var o = lineIdx * 6;
+          lPosArr[o] = ix; lPosArr[o + 1] = iy; lPosArr[o + 2] = 0;
+          lPosArr[o + 3] = positions[j * 3]; lPosArr[o + 4] = positions[j * 3 + 1]; lPosArr[o + 5] = 0;
+          lineIdx++;
+        }
+      }
+    }
+    lGeom.attributes.position.needsUpdate = true;
+    lGeom.setDrawRange(0, lineIdx * 2);
+  }
+
+  /* Animation loop */
+  var frameCount = 0, lastMobileTime = 0;
+  function animate(timestamp) {
+    if (!pageVisible) { requestAnimationFrame(animate); return; }
+    /* Mobile: throttle to ~30fps */
+    if (isMobile) {
+      if (timestamp - lastMobileTime < MOBILE_FRAME_MS) { requestAnimationFrame(animate); return; }
+      lastMobileTime = timestamp;
+    }
+    frameCount++;
+    var hw = width / 2, hh = height / 2;
+
+    for (var i = 0; i < PARTICLE_COUNT; i++) {
+      positions[i * 3]     += velocities[i * 2];
+      positions[i * 3 + 1] += velocities[i * 2 + 1];
+      /* Wrap at edges */
+      if (positions[i * 3]     < -hw - 15) positions[i * 3]     = hw + 15;
+      if (positions[i * 3]     >  hw + 15) positions[i * 3]     = -hw - 15;
+      if (positions[i * 3 + 1] < -hh - 15) positions[i * 3 + 1] = hh + 15;
+      if (positions[i * 3 + 1] >  hh + 15) positions[i * 3 + 1] = -hh - 15;
+      /* Mouse repulsion — desktop only */
+      if (!isMobile && !isTouchDevice) {
+        var dx = positions[i * 3] - mouseX, dy = positions[i * 3 + 1] - mouseY;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < MOUSE_RADIUS && dist > 0.1) {
+          var force = (MOUSE_RADIUS - dist) / MOUSE_RADIUS;
+          velocities[i * 2]     += (dx / dist) * force * 0.08;
+          velocities[i * 2 + 1] += (dy / dist) * force * 0.08;
+        }
+      }
+      /* Damping & speed clamp */
+      velocities[i * 2] *= 0.998; velocities[i * 2 + 1] *= 0.998;
+      var spd = Math.sqrt(velocities[i * 2] * velocities[i * 2] + velocities[i * 2 + 1] * velocities[i * 2 + 1]);
+      if (spd > 0.8) { var s = 0.8 / spd; velocities[i * 2] *= s; velocities[i * 2 + 1] *= s; }
+    }
+
+    pGeom.attributes.position.needsUpdate = true;
+    if (!isMobile && frameCount % CONNECTION_EVERY_N === 0) updateConnections();
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+
+  /* Memory cleanup */
+  window.addEventListener('beforeunload', function() {
+    if (pGeom) pGeom.dispose(); if (pMat) pMat.dispose();
+    if (lGeom) lGeom.dispose(); if (lMat) lMat.dispose();
+    if (glowTexture) glowTexture.dispose(); renderer.dispose();
+  });
+
+  requestAnimationFrame(animate);
+})();
+
+/* ================================================================
+   2. SCROLL REVEAL — IntersectionObserver
+   ================================================================ */
+(function() {
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(el) { observer.observe(el); });
+})();
+
+/* ================================================================
+   3. NAVBAR — scrolled glass effect (rAF throttled)
+   ================================================================ */
+(function() {
+  var navbar = document.getElementById('navbar');
+  var hero = document.querySelector('.hero-section');
+  var ticking = false;
+  function update() {
+    navbar.classList.toggle('scrolled', window.scrollY > (hero.offsetTop + hero.offsetHeight - 80));
+    ticking = false;
+  }
+  window.addEventListener('scroll', function() {
+    if (!ticking) { requestAnimationFrame(update); ticking = true; }
+  }, { passive: true });
+  update();
+})();
+
+/* ================================================================
+   4. ACTIVE NAV LINK — IntersectionObserver
+   ================================================================ */
+(function() {
+  var navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+  var sectionIds = [];
+  navLinks.forEach(function(a) {
+    var id = a.getAttribute('href').slice(1);
+    if (id && document.getElementById(id)) sectionIds.push(id);
+  });
+  var observer = new IntersectionObserver(function(entries) {
+    var activeId = null, minTop = Infinity;
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting && entry.boundingClientRect.top < minTop) {
+        minTop = entry.boundingClientRect.top; activeId = entry.target.id;
+      }
+    });
+    if (!activeId) {
+      var closestDist = Infinity;
+      sectionIds.forEach(function(id) {
+        var el = document.getElementById(id); if (!el) return;
+        var dist = Math.abs(el.getBoundingClientRect().top);
+        if (dist < closestDist) { closestDist = dist; activeId = id; }
+      });
+    }
+    if (activeId) {
+      navLinks.forEach(function(a) {
+        a.classList.toggle('active', a.getAttribute('href') === '#' + activeId);
+      });
+    }
+  }, { threshold: 0.2, rootMargin: '-60px 0px -30% 0px' });
+  sectionIds.forEach(function(id) {
+    var el = document.getElementById(id); if (el) observer.observe(el);
+  });
+})();
+
+/* ================================================================
+   5. MOBILE MENU — hamburger toggle
+   ================================================================ */
+(function() {
+  document.getElementById('mobileToggle').addEventListener('click', function() {
+    document.getElementById('navLinks').classList.toggle('open');
+  });
+})();
+function closeMobileNav() { document.getElementById('navLinks').classList.remove('open'); }
+
+/* ================================================================
+   6. FAQ — accordion
+   ================================================================ */
+function toggleFAQ(btn) {
+  var answer = btn.nextElementSibling;
+  var isOpen = answer.classList.contains('open');
+  document.querySelectorAll('.faq-answer.open').forEach(function(a) { a.classList.remove('open'); });
+  document.querySelectorAll('.faq-question').forEach(function(q) { q.setAttribute('aria-expanded', 'false'); });
+  if (!isOpen) { answer.classList.add('open'); btn.setAttribute('aria-expanded', 'true'); }
+}
+
+/* ================================================================
+   7. HERO PARALLAX — desktop only, rAF throttled
+   ================================================================ */
+(function() {
+  if (window.innerWidth < 768) return;
+  var hero = document.querySelector('.hero-section');
+  var contentLayer = document.querySelector('.hero-content-layer');
+  if (!hero || !contentLayer) return;
+  var ticking = false;
+  function update() {
+    var scrollY = window.scrollY;
+    var heroH = hero.offsetHeight;
+    if (scrollY < heroH) {
+      hero.style.setProperty('--parallax-bg', (scrollY * 0.5).toFixed(2) + 'px');
+      contentLayer.style.transform = 'translateY(' + (scrollY * 0.08).toFixed(2) + 'px)';
+      var p = Math.min(scrollY / (heroH * 0.75), 1);
+      hero.style.opacity = (1 - p * 0.45).toFixed(3);
+    }
+    ticking = false;
+  }
+  window.addEventListener('scroll', function() {
+    if (!ticking) { requestAnimationFrame(update); ticking = true; }
+  }, { passive: true });
+  /* Inject dynamic CSS for ::before pseudo-element transform */
+  var style = document.createElement('style');
+  style.textContent = '.hero-section::before { transform: translateY(var(--parallax-bg)); }';
+  document.head.appendChild(style);
+})();
+
+/* ================================================================
+   8. CONTACT MODAL — open / close / copy
+   ================================================================ */
+function openModal() {
+  document.getElementById('contactModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('contactModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('contactModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+function copyContact(sourceId, btn, fallbackText) {
+  var text = '';
+  if (sourceId === 'emailLink' && fallbackText) {
+    text = fallbackText;
+  } else {
+    var el = document.getElementById(sourceId);
+    text = el ? el.textContent.trim() : '';
+  }
+  if (!text) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(function() { showCopied(btn); }).catch(function() { fallbackCopy(text, btn); });
+  } else {
+    fallbackCopy(text, btn);
+  }
+}
+function fallbackCopy(text, btn) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); showCopied(btn); } catch(e) {}
+  document.body.removeChild(ta);
+}
+function showCopied(btn) {
+  var orig = btn.textContent;
+  btn.textContent = '已复制';
+  btn.classList.add('copied');
+  setTimeout(function() { btn.textContent = orig; btn.classList.remove('copied'); }, 1800);
+}
+</script>
+
+</body>
+</html>
